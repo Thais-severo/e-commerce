@@ -5,6 +5,7 @@ import com.tads.ecommerce.entity.Category;
 import com.tads.ecommerce.repostory.CategoryRepository;
 
 import com.tads.ecommerce.service.exception.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,25 @@ public class CategoryService {
         return new CategoryDTO(entity);
     }
 
+@Transactional
+    public CategoryDTO insert(CategoryDTO dto) {
+        Category entity = new Category();
+        entity.setName(dto.getName());
 
+        entity = repository.save(entity);
+        return new CategoryDTO(entity);
+    }
+
+    public CategoryDTO update(long id, CategoryDTO dto) {
+        try{
+            Category entity = repository.getReferenceById(id);
+            entity.setName(dto.getName());
+            entity = repository.save(entity);
+            return new CategoryDTO(entity);
+
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException ("Id not found"+ id );
+
+        }
+    }
 }
